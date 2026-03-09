@@ -1,0 +1,12 @@
+{
+    "name": "dimkoi-pos",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "install:all": "npm install --prefix apps/frontend && npm install --prefix apps/backend",
+        "dev": "concurrently \"npm run dev --prefix apps/frontend\" \"npm run dev --prefix apps/backend\""
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
