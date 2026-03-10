@@ -446,8 +446,8 @@ export const OrderPanel: React.FC = () => {
             className="group relative bg-white border-2 border-kopitiam-dark p-8 rounded-3xl shadow-[8px_8px_0px_0px_rgba(45,34,29,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex flex-col items-center text-center overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-kopitiam-salmon/20 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
-            <div className="w-24 h-24 bg-transparent rounded-full flex items-center justify-center mb-6 transform group-hover:rotate-6 transition-transform overflow-hidden">
-              <img src="/logo.svg" alt="Dim Kopi Booth" className="w-full h-full object-cover" />
+            <div className="w-20 h-20 bg-kopitiam-dark text-white rounded-2xl flex items-center justify-center mb-6 transform group-hover:rotate-6 transition-transform">
+              <Camera size={40} />
             </div>
             <h2 className="text-3xl font-serif font-black text-kopitiam-dark mb-2">Photo Booth</h2>
             <p className="text-kopitiam-dark/60 font-medium">Classic photostrips & 16:9 Photo. Retro vibes only.</p>
