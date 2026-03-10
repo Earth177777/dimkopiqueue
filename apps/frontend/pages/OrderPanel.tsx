@@ -564,9 +564,9 @@ export const OrderPanel: React.FC = () => {
               </div>
             </div>
             <img
-              src="https://images.unsplash.com/photo-1527203561188-dae1bc1a417f?q=80&w=1200&auto=format&fit=crop"
-              alt="Photo Booth Vibe"
-              className="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105"
+              src="/ogpreview.png"
+              alt="Dim Kopi Banner"
+              className="w-full h-full object-contain transform transition-transform duration-1000 group-hover:scale-105"
             />
           </div>
 
