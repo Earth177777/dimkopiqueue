@@ -16,21 +16,29 @@ export const OrderPanel: React.FC = () => {
   const [isPreorder, setIsPreorder] = useState(isPreorderMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [audio] = useState(new Audio('/filelagu.MP3'));
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+
+  // Master Category mode selector (null = show landing screen)
+  const [masterCategory, setMasterCategory] = useState<MasterCategory | null>(null);
 
   useEffect(() => {
     audio.loop = true;
+
+    if (masterCategory === null) {
+      audio.pause();
+      return;
+    }
 
     const handleInitialPlay = () => {
       if (!isMuted) {
         audio.play().catch(e => console.log("Autoplay blocked:", e));
       }
-      window.removeEventListener('click', handleInitialPlay);
+      window.removeEventListener('click', handleInitialPlay, true);
     };
 
     if (!isMuted) {
       audio.play().catch(() => {
-        window.addEventListener('click', handleInitialPlay);
+        window.addEventListener('click', handleInitialPlay, true);
       });
     } else {
       audio.pause();
@@ -38,14 +46,13 @@ export const OrderPanel: React.FC = () => {
 
     return () => {
       audio.pause();
-      window.removeEventListener('click', handleInitialPlay);
+      window.removeEventListener('click', handleInitialPlay, true);
     };
-  }, [isMuted, audio]);
+  }, [isMuted, audio, masterCategory]);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  // Master Category mode selector (null = show landing screen)
-  const [masterCategory, setMasterCategory] = useState<MasterCategory | null>(null);
+
 
   // Notification State
   const [lastAddedItem, setLastAddedItem] = useState<string | null>(null);
@@ -439,8 +446,8 @@ export const OrderPanel: React.FC = () => {
             className="group relative bg-white border-2 border-kopitiam-dark p-8 rounded-3xl shadow-[8px_8px_0px_0px_rgba(45,34,29,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex flex-col items-center text-center overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-kopitiam-salmon/20 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
-            <div className="w-20 h-20 bg-kopitiam-dark text-white rounded-2xl flex items-center justify-center mb-6 transform group-hover:rotate-6 transition-transform">
-              <Camera size={40} />
+            <div className="w-24 h-24 bg-transparent rounded-full flex items-center justify-center mb-6 transform group-hover:rotate-6 transition-transform overflow-hidden">
+              <img src="/logo.svg" alt="Dim Kopi Booth" className="w-full h-full object-cover" />
             </div>
             <h2 className="text-3xl font-serif font-black text-kopitiam-dark mb-2">Photo Booth</h2>
             <p className="text-kopitiam-dark/60 font-medium">Classic photostrips & 16:9 Photo. Retro vibes only.</p>
@@ -490,8 +497,8 @@ export const OrderPanel: React.FC = () => {
             <ArrowLeft size={18} />
           </button>
           <div className="flex items-center gap-3 cursor-pointer group" onClick={handleLogoClick}>
-            <div className={`w-10 h-10 md:w-12 md:h-12 ${masterCategory === 'photobooth' ? 'bg-kopitiam-red' : 'bg-kopitiam-jade'} rounded-full border-2 border-kopitiam-cream flex items-center justify-center text-white shadow-lg transform group-active:scale-95 transition-transform`}>
-              {masterCategory === 'photobooth' ? <Camera size={20} className="md:size-24" /> : <UtensilsCrossed size={20} className="md:size-24" />}
+            <div className={`w-10 h-10 md:w-12 md:h-12 ${masterCategory === 'photobooth' ? 'bg-kopitiam-red' : 'bg-kopitiam-jade'} rounded-full border-2 border-kopitiam-cream flex items-center justify-center shadow-lg transform group-active:scale-95 transition-transform overflow-hidden`}>
+              <img src="/logo.svg" alt="Dim Kopi" className="w-full h-full object-cover" />
             </div>
             <div className="leading-tight">
               <h1 className="text-base md:text-xl font-serif font-black tracking-tight text-amber-50 uppercase italic">

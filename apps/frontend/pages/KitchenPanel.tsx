@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useEvent } from '../context/EventContext';
 import { Order, OrderStatus } from '../types';
-import { Check, Clock, Printer, CheckCircle2, AlertCircle, Image, ShoppingBasket, Scissors, Camera, MousePointer2, ArrowRight, UtensilsCrossed } from 'lucide-react';
+import { Check, Clock, Printer, CheckCircle2, AlertCircle, Image, ShoppingBasket, Scissors, Camera, MousePointer2, ArrowRight, UtensilsCrossed, Download } from 'lucide-react';
 
 export const KitchenPanel: React.FC = () => {
   const { orders, updateOrderStatus, isConnected } = useEvent();
@@ -38,6 +38,31 @@ export const KitchenPanel: React.FC = () => {
       }
     }
     updateOrderStatus(orderId, nextStatus);
+  };
+
+  const handleExportCSV = () => {
+    // Prepare CSV Header
+    const headers = ['Order ID', 'Guest Name', 'Class', 'Date', 'Type', 'Status', 'Total', 'Items\n'];
+
+    // Prepare rows mapping over filtered orders
+    const rows = filteredOrders.map(order => {
+      const dateStr = new Date(order.timestamp).toLocaleString().replace(/,/g, '');
+      const typeStr = order.isPreorder ? 'Booking' : 'Walk-in';
+      const itemsStr = order.items.map(i => `${i.quantity}x ${i.name}`).join(' | ');
+      return `${order.id},"${order.customerName}","${order.customerClass || ''}",${dateStr},${typeStr},${order.status},${order.total},"${itemsStr}"\n`;
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + rows.join('');
+    const encodedUri = encodeURI(csvContent);
+
+    // Create an invisible link element to trigger the download
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    // Name includes currently viewed tab
+    link.setAttribute("download", `dim_kopi_${labMode}_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const formatTime = (ms: number) => {
@@ -141,6 +166,12 @@ export const KitchenPanel: React.FC = () => {
               {isConnected ? 'ONLINE' : 'OFFLINE'}
             </span>
           </div>
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-1.5 bg-kopitiam-dark text-white rounded font-bold text-xs uppercase tracking-widest hover:bg-black transition-colors shadow-sm"
+          >
+            <Download size={14} /> Download CSV
+          </button>
           <button
             onClick={() => setShowCompleted(prev => !prev)}
             className={`font-serif font-bold italic text-sm md:text-base px-5 py-2 rounded-lg border-2 transition-all flex items-center gap-2 shadow-sm ${showCompleted
