@@ -143,44 +143,44 @@ export const KitchenPanel: React.FC = () => {
             <p className="text-[10px] md:text-xs font-bold text-kopitiam-salmon tracking-[0.2em] mt-1">XII-R1 STATION</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex bg-kopitiam-dark/5 p-1 rounded-xl border border-kopitiam-dark/10">
+        <div className="flex flex-col sm:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
+          <div className="flex bg-kopitiam-dark/5 p-1 rounded-xl border border-kopitiam-dark/10 w-full sm:w-auto">
             <button
               onClick={() => setLabMode('photobooth')}
-              className={`px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${labMode === 'photobooth' ? 'bg-kopitiam-red text-white shadow-lg' : 'text-kopitiam-dark/40 hover:text-kopitiam-dark/70'}`}
+              className={`flex-1 sm:flex-none px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${labMode === 'photobooth' ? 'bg-kopitiam-red text-white shadow-lg' : 'text-kopitiam-dark/40 hover:text-kopitiam-dark/70'}`}
             >
               <Camera size={14} /> Booth
             </button>
             <button
               onClick={() => setLabMode('food')}
-              className={`px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${labMode === 'food' ? 'bg-kopitiam-jade text-white shadow-lg' : 'text-kopitiam-dark/40 hover:text-kopitiam-dark/70'}`}
+              className={`flex-1 sm:flex-none px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold text-[10px] md:text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${labMode === 'food' ? 'bg-kopitiam-jade text-white shadow-lg' : 'text-kopitiam-dark/40 hover:text-kopitiam-dark/70'}`}
             >
               <UtensilsCrossed size={14} /> Kitchen
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded border border-kopitiam-dark/10">
-            <span className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-kopitiam-jade animate-pulse' : 'bg-red-500'}`}></span>
-            <span className="text-kopitiam-dark font-bold text-xs md:text-sm tracking-wide">
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 w-full md:w-auto justify-between md:justify-end">
+          <div className="flex items-center gap-2 px-2 py-1 md:px-3 md:py-1.5 bg-white rounded border border-kopitiam-dark/10">
+            <span className={`w-2 h-2 md:w-2.5 md:h-2.5 rounded-full ${isConnected ? 'bg-kopitiam-jade animate-pulse' : 'bg-red-500'}`}></span>
+            <span className="text-kopitiam-dark font-bold text-[10px] md:text-sm tracking-wide">
               {isConnected ? 'ONLINE' : 'OFFLINE'}
             </span>
           </div>
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-1.5 bg-kopitiam-dark text-white rounded font-bold text-xs uppercase tracking-widest hover:bg-black transition-colors shadow-sm"
+            className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-1.5 bg-kopitiam-dark text-white rounded font-bold text-[10px] uppercase tracking-widest hover:bg-black transition-colors shadow-sm"
           >
-            <Download size={14} /> Download CSV
+            <Download size={14} /> <span className="hidden sm:inline">Download CSV</span><span className="sm:hidden">CSV</span>
           </button>
           <button
             onClick={() => setShowCompleted(prev => !prev)}
-            className={`font-serif font-bold italic text-sm md:text-base px-5 py-2 rounded-lg border-2 transition-all flex items-center gap-2 shadow-sm ${showCompleted
+            className={`font-serif font-bold italic text-xs md:text-base px-3 py-1.5 md:px-5 md:py-2 rounded-lg border-2 transition-all flex items-center gap-2 shadow-sm ${showCompleted
               ? 'bg-kopitiam-red border-kopitiam-red text-white'
               : 'bg-white border-kopitiam-jade text-kopitiam-jade hover:bg-kopitiam-jade hover:text-white'
               }`}
           >
-            {showCompleted ? <CheckCircle2 size={18} /> : <Clock size={18} />}
-            {showCompleted ? 'See Live Queue' : `History: ${completedCount}`}
+            {showCompleted ? <CheckCircle2 size={16} className="md:size-18" /> : <Clock size={16} className="md:size-18" />}
+            {showCompleted ? 'Live Queue' : `History: ${completedCount}`}
           </button>
         </div>
       </header>
@@ -216,7 +216,7 @@ export const KitchenPanel: React.FC = () => {
                 {(showCompleted ? completedOrders : activeOrders).map(order => (
                   <div
                     key={order.id}
-                    className={`w-72 md:w-80 shrink-0 flex flex-col rounded-sm shadow-[8px_8px_0px_0px_rgba(0,0,0,0.3)] border-2 transition-all duration-300 relative ${order.status === OrderStatus.COMPLETED ? 'bg-kopitiam-jade/10 border-kopitiam-jade/30' : getStatusColor(order.status)}`}
+                    className={`w-64 md:w-80 shrink-0 flex flex-col rounded-sm shadow-[8px_8px_0px_0px_rgba(0,0,0,0.3)] border-2 transition-all duration-300 relative ${order.status === OrderStatus.COMPLETED ? 'bg-kopitiam-jade/10 border-kopitiam-jade/30' : getStatusColor(order.status)}`}
                   >
                     {/* Tape/Pin Graphic */}
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-kopitiam-red border-2 border-kopitiam-maroon shadow-sm z-20"></div>
@@ -229,39 +229,39 @@ export const KitchenPanel: React.FC = () => {
                     )}
 
                     {/* Card Header */}
-                    <div className="p-4 md:p-5 border-b-2 border-dashed border-kopitiam-dark/20 flex justify-between items-start bg-white/40">
+                    <div className="p-3 md:p-5 border-b-2 border-dashed border-kopitiam-dark/20 flex justify-between items-start bg-white/40">
                       <div>
                         <div className="flex items-center gap-1 mb-1">
-                          <span className="text-xs font-black bg-kopitiam-dark text-white px-1.5 py-0.5 rounded-sm">ID</span>
-                          <h3 className="text-2xl md:text-3xl font-serif font-black text-kopitiam-dark leading-none">
+                          <span className="text-[10px] font-black bg-kopitiam-dark text-white px-1.5 py-0.5 rounded-sm">ID</span>
+                          <h3 className="text-xl md:text-3xl font-serif font-black text-kopitiam-dark leading-none">
                             #{order.id.split('#')[1] || order.id}
                           </h3>
                         </div>
-                        <p className="text-xs md:text-sm font-bold text-kopitiam-dark/70 uppercase tracking-wide truncate max-w-[150px]">
-                          {order.customerName || 'Guest'} {order.customerClass && <span className="text-[10px] opacity-60">({order.customerClass})</span>}
+                        <p className="text-[10px] md:text-sm font-bold text-kopitiam-dark/70 uppercase tracking-wide truncate max-w-[120px] md:max-w-[150px]">
+                          {order.customerName || 'Guest'} {order.customerClass && <span className="text-[8px] md:text-[10px] opacity-60">({order.customerClass})</span>}
                         </p>
                       </div>
                       <div className="text-right">
-                        <div className="flex items-center justify-end gap-1 text-[10px] font-bold text-kopitiam-dark/60 mb-2">
+                        <div className="flex items-center justify-end gap-1 text-[8px] md:text-[10px] font-bold text-kopitiam-dark/60 mb-2">
                           <Clock size={10} /> {formatTime(order.timestamp)}
                         </div>
                         <span className={`px-2 py-1 rounded text-[10px] md:text-xs font-bold uppercase tracking-widest border shadow-sm ${order.status === OrderStatus.COMPLETED
                           ? 'bg-kopitiam-jade text-white border-kopitiam-jade'
                           : 'bg-white border-kopitiam-dark/30 text-kopitiam-dark'
                           }`}>
-                          {order.status === OrderStatus.COMPLETED ? 'Finished' : getStatusLabel(order.status)}
+                          {order.status === OrderStatus.COMPLETED ? 'Done' : getStatusLabel(order.status)}
                         </span>
                       </div>
                     </div>
 
                     {/* Items */}
-                    <div className="p-4 md:p-5 flex-1 bg-white/60 space-y-3 md:space-y-4 overflow-y-auto min-h-[120px]">
+                    <div className="p-3 md:p-5 flex-1 bg-white/60 space-y-2 md:space-y-4 overflow-y-auto min-h-[100px] md:min-h-[120px]">
                       {order.items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-start border-l-2 border-kopitiam-dark/10 pl-3">
+                        <div key={idx} className="flex justify-between items-start border-l-2 border-kopitiam-dark/10 pl-2 md:pl-3">
                           <div className="flex-1">
-                            <span className="font-serif font-bold text-base md:text-lg leading-tight text-kopitiam-dark">{item.name}</span>
+                            <span className="font-serif font-bold text-sm md:text-lg leading-tight text-kopitiam-dark">{item.name}</span>
                           </div>
-                          <span className="font-black text-lg md:text-xl w-7 h-7 md:w-8 md:h-8 rounded-full border-2 border-kopitiam-dark flex items-center justify-center text-kopitiam-dark ml-3 shrink-0 bg-white shadow-sm">
+                          <span className="font-black text-base md:text-xl w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-kopitiam-dark flex items-center justify-center text-kopitiam-dark ml-2 md:ml-3 shrink-0 bg-white shadow-sm">
                             {item.quantity}
                           </span>
                         </div>

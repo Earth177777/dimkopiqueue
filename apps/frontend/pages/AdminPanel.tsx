@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useEvent } from '../context/EventContext';
-import { MenuItem, OrderStatus } from '../types';
-import { Trash2, Plus, Sparkles, AlertTriangle, RefreshCw, LayoutDashboard, Pencil, Camera, ClipboardList, Ban, CheckCircle2, Store, ShoppingBasket, TrendingUp, DollarSign, PieChart, BarChart3, Printer, Download } from 'lucide-react';
+import { MenuItem, OrderStatus, PHOTOBOOTH_CATEGORIES, FOOD_CATEGORIES } from '../types';
+import { Trash2, Plus, Sparkles, AlertTriangle, RefreshCw, LayoutDashboard, Pencil, Camera, ClipboardList, Ban, CheckCircle2, Store, ShoppingBasket, TrendingUp, DollarSign, PieChart, BarChart3, Printer, Download, UtensilsCrossed } from 'lucide-react';
 
 export const AdminPanel: React.FC = () => {
     const {
@@ -35,9 +35,11 @@ export const AdminPanel: React.FC = () => {
     const [resetError, setResetError] = useState(false);
 
     const categoryOptions = useMemo(() => {
-        const cats = new Set(menu.map(item => item.category).filter(Boolean));
-        return Array.from(cats);
-    }, [menu]);
+        const baseCats = newItemMasterCategory === 'food' ? FOOD_CATEGORIES : PHOTOBOOTH_CATEGORIES;
+        const menuCats = menu.filter(i => i.masterCategory === newItemMasterCategory).map(i => i.category).filter(Boolean);
+        const cats = new Set([...baseCats, ...menuCats]);
+        return Array.from(cats).filter(c => c !== 'All');
+    }, [menu, newItemMasterCategory]);
 
     // Finance Calculations
     const financeData = useMemo(() => {
@@ -141,7 +143,7 @@ export const AdminPanel: React.FC = () => {
             const updatedItem: MenuItem = {
                 id: editingId,
                 name: newItemName,
-                price: parseFloat(newItemPrice) || 0,
+                price: parseFloat(newItemPrice.replace(/\./g, '')) || 0,
                 category: newItemCategory,
                 masterCategory: newItemMasterCategory,
                 description: newItemDescription,
@@ -154,7 +156,7 @@ export const AdminPanel: React.FC = () => {
             const item: MenuItem = {
                 id: Date.now().toString(),
                 name: newItemName,
-                price: parseFloat(newItemPrice) || 0,
+                price: parseFloat(newItemPrice.replace(/\./g, '')) || 0,
                 category: newItemCategory,
                 masterCategory: newItemMasterCategory,
                 description: newItemDescription,
@@ -319,13 +321,13 @@ export const AdminPanel: React.FC = () => {
                             </button>
                         </div>
 
-                        <div className="flex-1 md:flex-none bg-white px-4 md:px-6 py-3 rounded-lg shadow-sm border-2 border-kopitiam-jade/30">
-                            <span className="block text-xs text-kopitiam-jade uppercase font-bold tracking-wider">Total Revenue</span>
-                            <span className="text-2xl md:text-3xl font-serif font-black text-kopitiam-dark">${financeData.totalRevenue.toFixed(2)}</span>
+                        <div className="w-full md:w-auto flex-1 md:flex-none bg-white px-4 md:px-6 py-3 rounded-lg shadow-sm border-2 border-kopitiam-jade/30">
+                            <span className="block text-[10px] md:text-xs text-kopitiam-jade uppercase font-bold tracking-wider">Total Revenue</span>
+                            <span className="text-xl md:text-3xl font-serif font-black text-kopitiam-dark">Rp {financeData.totalRevenue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
                         </div>
                         <button
                             onClick={() => setShowResetModal(true)}
-                            className="flex-1 md:flex-none flex justify-center items-center gap-2 px-6 py-3 bg-kopitiam-red text-white rounded-lg font-bold hover:bg-kopitiam-maroon shadow-sm transition-colors"
+                            className="w-full md:w-auto flex-1 md:flex-none flex justify-center items-center gap-2 px-4 md:px-6 py-3 bg-kopitiam-red text-white rounded-lg font-bold hover:bg-kopitiam-maroon shadow-sm transition-colors text-sm md:text-base"
                         >
                             <RefreshCw size={18} /> <span className="whitespace-nowrap">New Session</span>
                         </button>
@@ -333,36 +335,36 @@ export const AdminPanel: React.FC = () => {
                 </header>
 
                 {/* Tab Navigation */}
-                <div className="flex gap-1 md:gap-4 mb-6 border-b-2 border-kopitiam-dark/10 overflow-x-auto">
+                <div className="flex gap-1 md:gap-4 mb-6 border-b-2 border-kopitiam-dark/10 overflow-x-auto no-scrollbar pb-1">
                     <button
                         onClick={() => setActiveTab('menu')}
-                        className={`flex items-center gap-2 pb-3 px-4 md:px-6 font-bold uppercase tracking-wide border-b-4 transition-colors whitespace-nowrap ${activeTab === 'menu'
+                        className={`flex items-center gap-2 pb-3 px-3 md:px-6 font-bold uppercase tracking-wide border-b-4 transition-colors whitespace-nowrap text-xs md:text-sm ${activeTab === 'menu'
                             ? 'border-kopitiam-jade text-kopitiam-dark bg-kopitiam-jade/5'
                             : 'border-transparent text-gray-400 hover:text-kopitiam-jade/70'
                             }`}
                     >
-                        <Camera size={18} /> Services & Packages
+                        <Camera size={16} className="md:size-18" /> Services
                     </button>
                     <button
                         onClick={() => setActiveTab('orders')}
-                        className={`flex items-center gap-2 pb-3 px-4 md:px-6 font-bold uppercase tracking-wide border-b-4 transition-colors whitespace-nowrap ${activeTab === 'orders'
+                        className={`flex items-center gap-2 pb-3 px-3 md:px-6 font-bold uppercase tracking-wide border-b-4 transition-colors whitespace-nowrap text-xs md:text-sm ${activeTab === 'orders'
                             ? 'border-kopitiam-jade text-kopitiam-dark bg-kopitiam-jade/5'
                             : 'border-transparent text-gray-400 hover:text-kopitiam-jade/70'
                             }`}
                     >
-                        <ClipboardList size={18} /> Order History
+                        <ClipboardList size={16} className="md:size-18" /> Orders
                     </button>
                     <button
                         onClick={() => setActiveTab('finance')}
-                        className={`flex items-center gap-2 px-6 py-3 font-serif font-black uppercase tracking-widest transition-all border-b-4 ${activeTab === 'finance' ? 'border-kopitiam-red text-kopitiam-red bg-kopitiam-paper' : 'border-transparent text-kopitiam-dark/40 hover:text-kopitiam-dark hover:bg-black/5'}`}
+                        className={`flex items-center gap-2 px-3 md:px-6 py-3 font-serif font-black uppercase tracking-widest transition-all border-b-4 text-xs md:text-sm whitespace-nowrap ${activeTab === 'finance' ? 'border-kopitiam-red text-kopitiam-red bg-kopitiam-paper' : 'border-transparent text-kopitiam-dark/40 hover:text-kopitiam-dark hover:bg-black/5'}`}
                     >
-                        <TrendingUp size={18} /> Finance
+                        <TrendingUp size={16} className="md:size-18" /> Finance
                     </button>
                     <button
                         onClick={() => setActiveTab('settings')}
-                        className={`flex items-center gap-2 px-6 py-3 font-serif font-black uppercase tracking-widest transition-all border-b-4 ${activeTab === 'settings' ? 'border-kopitiam-red text-kopitiam-red bg-kopitiam-paper' : 'border-transparent text-kopitiam-dark/40 hover:text-kopitiam-dark hover:bg-black/5'}`}
+                        className={`flex items-center gap-2 px-3 md:px-6 py-3 font-serif font-black uppercase tracking-widest transition-all border-b-4 text-xs md:text-sm whitespace-nowrap ${activeTab === 'settings' ? 'border-kopitiam-red text-kopitiam-red bg-kopitiam-paper' : 'border-transparent text-kopitiam-dark/40 hover:text-kopitiam-dark hover:bg-black/5'}`}
                     >
-                        <Store size={18} /> System
+                        <Store size={16} className="md:size-18" /> System
                     </button>
                 </div>
 
@@ -393,7 +395,7 @@ export const AdminPanel: React.FC = () => {
                                             <input required type="text" value={newItemName} onChange={e => setNewItemName(e.target.value)} className="w-full px-4 py-3 border-2 border-kopitiam-dark/20 rounded bg-white focus:border-kopitiam-jade focus:outline-none" placeholder="e.g. Classic Strip" />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-bold text-kopitiam-dark mb-2 uppercase tracking-wide">Price ($)</label>
+                                            <label className="block text-sm font-bold text-kopitiam-dark mb-2 uppercase tracking-wide">Price (Rp)</label>
                                             <input required type="number" step="0.01" value={newItemPrice} onChange={e => setNewItemPrice(e.target.value)} className="w-full px-4 py-3 border-2 border-kopitiam-dark/20 rounded bg-white focus:border-kopitiam-jade focus:outline-none" placeholder="0.00" />
                                         </div>
                                     </div>
@@ -464,40 +466,41 @@ export const AdminPanel: React.FC = () => {
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse min-w-[600px]">
-                                <thead className="bg-kopitiam-dark text-kopitiam-cream uppercase text-xs font-bold tracking-wider">
+                                <thead className="bg-kopitiam-dark text-kopitiam-cream uppercase text-[10px] md:text-xs font-bold tracking-wider">
                                     <tr>
-                                        <th className="px-6 py-5">Preview</th>
-                                        <th className="px-6 py-5">Name</th>
-                                        <th className="px-6 py-5">Master</th>
-                                        <th className="px-6 py-5">Category</th>
-                                        <th className="px-6 py-5">Price</th>
-                                        <th className="px-6 py-5">Status</th>
-                                        <th className="px-6 py-5 text-right">Actions</th>
+                                        <th className="px-4 py-4 md:px-6 md:py-5">Preview</th>
+                                        <th className="px-4 py-4 md:px-6 md:py-5">Name</th>
+                                        <th className="hidden md:table-cell px-6 py-5">Master</th>
+                                        <th className="hidden sm:table-cell px-6 py-5">Category</th>
+                                        <th className="px-4 py-4 md:px-6 md:py-5">Price</th>
+                                        <th className="px-4 py-4 md:px-6 md:py-5">Status</th>
+                                        <th className="px-4 py-4 md:px-6 md:py-5 text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-kopitiam-dark/10">
                                     {menu.map(item => (
                                         <tr key={item.id} className="hover:bg-kopitiam-jade/5 transition-colors">
-                                            <td className="px-6 py-4">
-                                                <img src={item.image} alt="" className="w-14 h-14 rounded border border-kopitiam-dark/20 object-cover" />
+                                            <td className="px-4 py-3 md:px-6 md:py-4">
+                                                <img src={item.image} alt="" className="w-10 h-10 md:w-14 md:h-14 rounded border border-kopitiam-dark/20 object-cover" />
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <div className="font-serif font-bold text-kopitiam-dark text-lg">{item.name}</div>
-                                                <div className="text-xs text-kopitiam-dark/60 truncate max-w-xs">{item.description}</div>
+                                            <td className="px-4 py-3 md:px-6 md:py-4">
+                                                <div className="font-serif font-bold text-kopitiam-dark text-sm md:text-lg">{item.name}</div>
+                                                <div className="hidden md:block text-xs text-kopitiam-dark/60 truncate max-w-xs">{item.description}</div>
+                                                <div className="md:hidden text-[10px] text-kopitiam-dark/60 font-bold uppercase mt-0.5">{item.category}</div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="hidden md:table-cell px-6 py-4">
                                                 <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest ${item.masterCategory === 'food' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}`}>
                                                     {item.masterCategory || 'booth'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="hidden sm:table-cell px-6 py-4">
                                                 <span className="px-3 py-1 bg-kopitiam-cream rounded-full text-xs font-bold text-kopitiam-dark border border-kopitiam-dark/20 uppercase tracking-wide">{item.category}</span>
                                             </td>
-                                            <td className="px-6 py-4 font-bold text-kopitiam-dark font-serif">${item.price.toFixed(2)}</td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-3 md:px-6 md:py-4 font-bold text-kopitiam-dark font-serif text-sm md:text-base">Rp {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
+                                            <td className="px-4 py-3 md:px-6 md:py-4">
                                                 <button
                                                     onClick={() => toggleItemAvailability(item.id)}
-                                                    className={`px-3 py-1 rounded text-xs font-bold uppercase tracking-wide transition-colors border ${item.available
+                                                    className={`px-2 py-1 md:px-3 md:py-1 rounded text-[10px] md:text-xs font-bold uppercase tracking-wide transition-colors border ${item.available
                                                         ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200'
                                                         : 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200'
                                                         }`}
@@ -726,7 +729,7 @@ export const AdminPanel: React.FC = () => {
                                                     </ul>
                                                 </td>
                                                 <td className="px-6 py-4 font-serif font-bold text-kopitiam-dark">
-                                                    ${order.total.toFixed(2)}
+                                                    Rp {order.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <select
@@ -774,40 +777,44 @@ export const AdminPanel: React.FC = () => {
                 )}
 
                 {activeTab === 'finance' && (
-                    /* Finance Panel Section */
-                    <div className="space-y-6 animate-fade-in">
-                        {/* Metrics Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-white p-6 rounded-xl border-2 border-kopitiam-dark/10 shadow-sm flex items-center justify-between">
-                                <div>
-                                    <p className="text-kopitiam-dark/60 text-xs font-bold uppercase tracking-wider mb-1">Total Revenue</p>
-                                    <h3 className="text-3xl font-serif font-black text-kopitiam-dark">${financeData.totalRevenue.toFixed(2)}</h3>
+                    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {/* KPI Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                            <div className="bg-white p-5 md:p-6 rounded-xl border-2 border-kopitiam-dark/10 shadow-sm">
+                                <div className="flex items-center gap-4 mb-2">
+                                    <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><ClipboardList size={20} /></div>
+                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Orders</span>
                                 </div>
-                                <div className="bg-kopitiam-jade/10 p-3 rounded-full text-kopitiam-jade">
-                                    <DollarSign size={28} />
+                                <div className="text-2xl md:text-3xl font-serif font-black text-kopitiam-dark">{financeData.totalOrders}</div>
+                            </div>
+                            <div className="bg-white p-5 md:p-6 rounded-xl border-2 border-kopitiam-dark/10 shadow-sm">
+                                <div className="flex items-center gap-4 mb-2">
+                                    <div className="p-2 bg-kopitiam-jade/10 text-kopitiam-jade rounded-lg"><DollarSign size={20} /></div>
+                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Avg Order</span>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-serif font-black text-kopitiam-dark">Rp {Math.round(financeData.avgOrderValue).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</div>
+                            </div>
+                            <div className="bg-white p-5 md:p-6 rounded-xl border-2 border-kopitiam-dark/10 shadow-sm">
+                                <div className="flex items-center gap-4 mb-2">
+                                    <div className="p-2 bg-purple-100 text-purple-600 rounded-lg"><PieChart size={20} /></div>
+                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Photo Share</span>
+                                </div>
+                                <div className="text-2xl md:text-3xl font-serif font-black text-kopitiam-dark">
+                                    {Math.round((financeData.masterSales['photobooth'] / (financeData.totalRevenue || 1)) * 100)}%
                                 </div>
                             </div>
-                            <div className="bg-white p-6 rounded-xl border-2 border-kopitiam-dark/10 shadow-sm flex items-center justify-between">
-                                <div>
-                                    <p className="text-kopitiam-dark/60 text-xs font-bold uppercase tracking-wider mb-1">Avg. Ticket Value</p>
-                                    <h3 className="text-3xl font-serif font-black text-kopitiam-dark">${financeData.avgOrderValue.toFixed(2)}</h3>
+                            <div className="bg-white p-5 md:p-6 rounded-xl border-2 border-kopitiam-dark/10 shadow-sm">
+                                <div className="flex items-center gap-4 mb-2">
+                                    <div className="p-2 bg-amber-100 text-amber-600 rounded-lg"><UtensilsCrossed size={20} /></div>
+                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Food Share</span>
                                 </div>
-                                <div className="bg-kopitiam-orange/10 p-3 rounded-full text-kopitiam-orange">
-                                    <BarChart3 size={28} />
-                                </div>
-                            </div>
-                            <div className="bg-white p-6 rounded-xl border-2 border-kopitiam-dark/10 shadow-sm flex items-center justify-between">
-                                <div>
-                                    <p className="text-kopitiam-dark/60 text-xs font-bold uppercase tracking-wider mb-1">Total Sessions</p>
-                                    <h3 className="text-3xl font-serif font-black text-kopitiam-dark">{financeData.totalOrders}</h3>
-                                </div>
-                                <div className="bg-kopitiam-red/10 p-3 rounded-full text-kopitiam-red">
-                                    <ShoppingBasket size={28} />
+                                <div className="text-2xl md:text-3xl font-serif font-black text-kopitiam-dark">
+                                    {Math.round((financeData.masterSales['food'] / (financeData.totalRevenue || 1)) * 100)}%
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                             {/* Top Selling Items */}
                             <div className="bg-white rounded-xl shadow-md border-2 border-kopitiam-dark/10 overflow-hidden">
                                 <div className="p-5 border-b-2 border-kopitiam-dark/5 bg-kopitiam-paper flex justify-between items-center">
@@ -829,7 +836,7 @@ export const AdminPanel: React.FC = () => {
                                                 <tr key={idx} className="hover:bg-kopitiam-cream/50">
                                                     <td className="px-5 py-3 font-medium text-sm text-kopitiam-dark">{item.name}</td>
                                                     <td className="px-5 py-3 text-right font-mono text-sm">{item.qty}</td>
-                                                    <td className="px-5 py-3 text-right font-mono text-sm">${item.revenue.toFixed(2)}</td>
+                                                    <td className="px-5 py-3 text-right font-mono text-sm">Rp {item.revenue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
                                                 </tr>
                                             ))}
                                             {financeData.topItems.length === 0 && (
@@ -852,7 +859,7 @@ export const AdminPanel: React.FC = () => {
                                         <div key={cat}>
                                             <div className="flex justify-between text-sm font-bold text-kopitiam-dark mb-1">
                                                 <span>{cat}</span>
-                                                <span>${(amount as number).toFixed(2)}</span>
+                                                <span>Rp {Number((amount as number)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
                                             </div>
                                             <div className="w-full bg-kopitiam-cream rounded-full h-2.5 overflow-hidden">
                                                 <div

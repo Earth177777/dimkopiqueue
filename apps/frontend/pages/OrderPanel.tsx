@@ -70,7 +70,10 @@ export const OrderPanel: React.FC = () => {
     if (!masterCategory) return ['All'];
     const baseCats = masterCategory === 'photobooth' ? PHOTOBOOTH_CATEGORIES : FOOD_CATEGORIES;
     const menuCats = new Set(menu.filter(i => i.masterCategory === masterCategory).map(i => i.category).filter(Boolean));
-    return baseCats.filter(c => c === 'All' || menuCats.has(c));
+
+    // Combine base categories (if they exist in menu, or are 'All') with any custom categories
+    const combinedCats = new Set([...baseCats.filter(c => c === 'All' || menuCats.has(c)), ...Array.from(menuCats)]);
+    return Array.from(combinedCats);
   }, [menu, masterCategory]);
 
   // Sync Preorder state when global setting changes
@@ -251,41 +254,41 @@ export const OrderPanel: React.FC = () => {
         {/* Order Confirmed Receipt Popup */}
         {confirmedOrder && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-            <div className="bg-kopitiam-cream w-full max-w-sm rounded-2xl shadow-2xl border-4 border-kopitiam-dark overflow-hidden animate-in zoom-in duration-300">
+            <div className="bg-kopitiam-cream w-full max-w-sm max-h-[90vh] flex flex-col rounded-2xl shadow-2xl border-4 border-kopitiam-dark overflow-hidden animate-in zoom-in duration-300">
               {/* Header */}
-              <div className="bg-kopitiam-dark px-6 py-5 flex items-center gap-4">
-                <div className="w-14 h-14 bg-kopitiam-jade rounded-full flex items-center justify-center shrink-0 shadow-lg">
-                  <CheckCircle size={30} strokeWidth={2.5} className="text-white" />
+              <div className="bg-kopitiam-dark px-4 py-4 md:px-6 md:py-5 flex items-center gap-3 md:gap-4 shrink-0">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-kopitiam-jade rounded-full flex items-center justify-center shrink-0 shadow-lg">
+                  <CheckCircle size={24} className="md:size-[30px] text-white" strokeWidth={2.5} />
                 </div>
                 <div>
-                  <p className="text-kopitiam-jade text-xs font-bold uppercase tracking-widest">Booking Confirmed!</p>
-                  <h2 className="text-kopitiam-cream font-serif font-black text-2xl leading-tight">
+                  <p className="text-kopitiam-jade text-[10px] md:text-xs font-bold uppercase tracking-widest">Booking Confirmed!</p>
+                  <h2 className="text-kopitiam-cream font-serif font-black text-xl md:text-2xl leading-tight">
                     Hi, {confirmedOrder.customerName.split(' ')[0]}! 👋
                   </h2>
                 </div>
               </div>
 
               {/* Queue Number */}
-              <div className="bg-kopitiam-red flex flex-col items-center py-5">
-                <p className="text-kopitiam-cream/80 text-xs font-bold uppercase tracking-[0.2em] mb-1">Your Queue Number</p>
-                <span className="text-kopitiam-cream font-serif font-black text-6xl tracking-tight drop-shadow-lg">
+              <div className="bg-kopitiam-red flex flex-col items-center py-4 md:py-5 shrink-0">
+                <p className="text-kopitiam-cream/80 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-1">Your Queue Number</p>
+                <span className="text-kopitiam-cream font-serif font-black text-5xl md:text-6xl tracking-tight drop-shadow-lg">
                   {confirmedOrder.displayId}
                 </span>
-                <p className="text-kopitiam-cream/70 text-xs mt-1">Show this when called</p>
+                <p className="text-kopitiam-cream/70 text-[10px] md:text-xs mt-1">Show this when called</p>
               </div>
 
-              <div className="px-6 py-5 space-y-4">
+              <div className="px-4 py-4 md:px-6 md:py-5 space-y-3 md:space-y-4 overflow-y-auto">
                 {/* Items ordered */}
                 <div className="bg-white rounded-lg border border-kopitiam-dark/10 divide-y divide-kopitiam-dark/5">
                   {confirmedOrder.items.map((item: any, i: number) => (
                     <div key={i} className="flex justify-between items-center px-4 py-2 text-sm">
                       <span className="font-serif text-kopitiam-dark font-semibold">{item.name} <span className="text-kopitiam-dark/50">×{item.quantity}</span></span>
-                      <span className="font-bold text-kopitiam-dark">${(item.price * item.quantity).toFixed(2)}</span>
+                      <span className="font-bold text-kopitiam-dark">Rp {Number(item.price * item.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
                     </div>
                   ))}
                   <div className="flex justify-between items-center px-4 py-3 bg-kopitiam-paper">
                     <span className="font-serif font-black text-kopitiam-dark uppercase tracking-wider text-sm">Total</span>
-                    <span className="font-serif font-black text-kopitiam-red text-xl">${confirmedOrder.total.toFixed(2)}</span>
+                    <span className="font-serif font-black text-kopitiam-red text-xl">Rp {confirmedOrder.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
                   </div>
                 </div>
 
@@ -293,7 +296,7 @@ export const OrderPanel: React.FC = () => {
                 <div className="flex items-start gap-3 bg-amber-50 border-2 border-amber-300 rounded-lg px-4 py-3">
                   <Banknote size={20} className="text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-amber-800 text-sm font-bold leading-snug">
-                    Please bring <span className="text-amber-900 underline underline-offset-2">exact cash</span> of ${confirmedOrder.total.toFixed(2)} — no change provided.
+                    Please bring <span className="text-amber-900 underline underline-offset-2">exact cash</span> of Rp {confirmedOrder.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} — no change provided.
                   </p>
                 </div>
 
@@ -558,10 +561,6 @@ export const OrderPanel: React.FC = () => {
           {/* Header Image */}
           <div className="w-full h-32 md:h-48 rounded-xl overflow-hidden shadow-lg border-2 border-kopitiam-dark/20 mb-6 relative group">
             <div className="absolute inset-0 bg-gradient-to-t from-kopitiam-dark/80 to-transparent z-10 flex items-end p-6">
-              <div>
-                <h2 className="text-white font-serif font-bold text-2xl md:text-3xl drop-shadow-md">Dim Kopi Moments</h2>
-                <p className="text-kopitiam-cream/90 text-sm md:text-base font-medium">Organized by Apek ama XII-R1</p>
-              </div>
             </div>
             <img
               src="/ogpreview.png"
@@ -605,7 +604,7 @@ export const OrderPanel: React.FC = () => {
           </div>
 
           {/* Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 pb-20">
             {filteredMenu.map(item => {
               const quantity = getItemQuantity(item.id);
               return (
@@ -613,27 +612,27 @@ export const OrderPanel: React.FC = () => {
                   <div className="h-48 overflow-hidden relative">
                     <div className="absolute inset-0 bg-kopitiam-jade/20 z-10 mix-blend-multiply opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 sepia-[0.2]" />
-                    <div className="absolute top-3 right-3 bg-kopitiam-cream/90 backdrop-blur-sm px-3 py-1 rounded-md border border-kopitiam-dark font-bold text-kopitiam-dark shadow-sm z-20">
-                      ${item.price.toFixed(2)}
+                    <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-kopitiam-cream/90 backdrop-blur-sm px-2 py-0.5 md:px-3 md:py-1 rounded-md border border-kopitiam-dark font-bold text-kopitiam-dark shadow-sm z-20 text-[10px] md:text-sm">
+                      Rp {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                     </div>
                     {quantity > 0 && (
-                      <div className="absolute top-3 left-3 bg-kopitiam-orange text-white w-8 h-8 flex items-center justify-center rounded-full font-bold shadow-md z-20 border-2 border-white animate-bounce-in">
+                      <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-kopitiam-orange text-white w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-full font-bold shadow-md z-20 border-2 border-white animate-bounce-in text-xs md:text-base">
                         {quantity}
                       </div>
                     )}
                   </div>
-                  <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="font-serif font-bold text-xl text-kopitiam-dark mb-2 leading-tight">{item.name}</h3>
-                    <div className="w-10 h-1 bg-kopitiam-salmon mb-3"></div>
-                    <p className="text-kopitiam-dark/70 text-sm mb-6 flex-1 italic font-serif">{item.description}</p>
+                  <div className="p-3 md:p-5 flex-1 flex flex-col">
+                    <h3 className="font-serif font-bold text-sm md:text-xl text-kopitiam-dark mb-1 md:mb-2 leading-tight line-clamp-2 md:line-clamp-none h-10 md:h-auto">{item.name}</h3>
+                    <div className="w-8 md:w-10 h-1 bg-kopitiam-salmon mb-2 md:mb-3"></div>
+                    <p className="text-kopitiam-dark/70 text-[10px] md:text-sm mb-3 md:mb-6 flex-1 italic font-serif line-clamp-2 md:line-clamp-none">{item.description}</p>
 
                     {quantity === 0 ? (
                       <button
                         onClick={() => addToCart(item)}
-                        className={`w-full py-3 ${masterCategory === 'photobooth' ? 'bg-kopitiam-orange hover:bg-kopitiam-red' : 'bg-kopitiam-jade hover:bg-green-700'} text-white rounded-md font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 active:translate-y-1 shadow-[0_4px_0_rgba(0,0,0,0.2)] active:shadow-none mb-1`}
+                        className={`w-full py-2 md:py-3 text-[10px] md:text-sm ${masterCategory === 'photobooth' ? 'bg-kopitiam-orange hover:bg-kopitiam-red' : 'bg-kopitiam-jade hover:bg-green-700'} text-white rounded-md font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1 md:gap-2 active:translate-y-1 shadow-[0_4px_0_rgba(0,0,0,0.2)] md:shadow-[0_4px_0_rgba(0,0,0,0.2)] active:shadow-none mb-1`}
                       >
-                        {masterCategory === 'photobooth' ? <Camera size={18} strokeWidth={3} /> : <ShoppingBasket size={18} strokeWidth={3} />}
-                        <span>Select Item</span>
+                        {masterCategory === 'photobooth' ? <Camera size={14} className="md:size-18" strokeWidth={3} /> : <ShoppingBasket size={14} className="md:size-18" strokeWidth={3} />}
+                        <span className="truncate">Select</span>
                       </button>
                     ) : (
                       <div className="w-full py-3 flex items-center justify-between bg-kopitiam-dark text-white rounded-md px-4 shadow-[0_4px_0_rgba(0,0,0,0.2)] mb-1 border-2 border-kopitiam-dark animate-in fade-in zoom-in duration-200">
@@ -674,7 +673,7 @@ export const OrderPanel: React.FC = () => {
           <div className="flex flex-col items-start leading-none border-l border-white/20 pl-3 ml-1">
             <span className="text-[10px] uppercase font-bold text-white/60 tracking-widest">Total</span>
             <span className="font-bold font-serif text-base md:text-lg">
-              ${cartTotal.toFixed(2)}
+              Rp {Number(cartTotal).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
             </span>
           </div>
           <ChevronRight size={18} className="ml-1 opacity-60" />
@@ -713,7 +712,7 @@ export const OrderPanel: React.FC = () => {
                   <div key={item.id} className="flex gap-4 p-3 bg-white border border-kopitiam-dark/20 rounded-md shadow-sm">
                     <div className="flex-1">
                       <h4 className="font-serif font-bold text-kopitiam-dark line-clamp-1">{item.name}</h4>
-                      <p className="text-kopitiam-jade font-bold text-sm mb-2">${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="text-kopitiam-jade font-bold text-sm mb-2">Rp {Number(item.price * item.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</p>
                       <div className="flex items-center gap-3">
                         <button onClick={() => updateQuantity(item.id, -1)} className="w-7 h-7 rounded bg-kopitiam-paper border border-kopitiam-dark/30 flex items-center justify-center hover:bg-kopitiam-salmon hover:text-white transition-colors">
                           <Minus size={14} />
@@ -811,7 +810,7 @@ export const OrderPanel: React.FC = () => {
 
               <div className="flex justify-between items-center mb-6 text-kopitiam-dark font-serif font-black text-xl">
                 <span>Total</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>Rp {Number(cartTotal).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
               </div>
 
               <button
@@ -846,47 +845,47 @@ export const OrderPanel: React.FC = () => {
         {/* Order Confirmed Receipt Popup */}
         {confirmedOrder && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-            <div className="bg-kopitiam-cream w-full max-w-sm rounded-2xl shadow-2xl border-4 border-kopitiam-dark overflow-hidden animate-in zoom-in duration-300">
+            <div className="bg-kopitiam-cream w-full max-w-sm max-h-[90vh] flex flex-col rounded-2xl shadow-2xl border-4 border-kopitiam-dark overflow-hidden animate-in zoom-in duration-300">
               {/* Header */}
-              <div className="bg-kopitiam-dark px-6 py-5 flex items-center gap-4">
-                <div className="w-14 h-14 bg-kopitiam-jade rounded-full flex items-center justify-center shrink-0 shadow-lg">
-                  <CheckCircle size={30} strokeWidth={2.5} className="text-white" />
+              <div className="bg-kopitiam-dark px-4 py-4 md:px-6 md:py-5 flex items-center gap-3 md:gap-4 shrink-0">
+                <div className="w-10 h-10 md:w-14 md:h-14 bg-kopitiam-jade rounded-full flex items-center justify-center shrink-0 shadow-lg">
+                  <CheckCircle size={24} className="md:size-[30px] text-white" strokeWidth={2.5} />
                 </div>
                 <div>
-                  <p className="text-kopitiam-jade text-xs font-bold uppercase tracking-widest">Booking Confirmed!</p>
-                  <h2 className="text-kopitiam-cream font-serif font-black text-2xl leading-tight">
+                  <p className="text-kopitiam-jade text-[10px] md:text-xs font-bold uppercase tracking-widest">Booking Confirmed!</p>
+                  <h2 className="text-kopitiam-cream font-serif font-black text-xl md:text-2xl leading-tight">
                     Hi, {confirmedOrder.customerName.split(' ')[0]}! 👋
                   </h2>
-                  <p className="text-kopitiam-cream/60 text-xs font-bold uppercase tracking-widest">{confirmedOrder.customerClass}</p>
+                  <p className="text-kopitiam-cream/60 text-[10px] md:text-xs font-bold uppercase tracking-widest">{confirmedOrder.customerClass}</p>
                 </div>
               </div>
               {/* Queue Number */}
-              <div className="bg-kopitiam-red flex flex-col items-center py-5">
-                <p className="text-kopitiam-cream/80 text-xs font-bold uppercase tracking-[0.2em] mb-1">Your Queue Number</p>
-                <span className="text-kopitiam-cream font-serif font-black text-6xl tracking-tight drop-shadow-lg">
+              <div className="bg-kopitiam-red flex flex-col items-center py-4 md:py-5 shrink-0">
+                <p className="text-kopitiam-cream/80 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-1">Your Queue Number</p>
+                <span className="text-kopitiam-cream font-serif font-black text-5xl md:text-6xl tracking-tight drop-shadow-lg">
                   {confirmedOrder.displayId}
                 </span>
-                <p className="text-kopitiam-cream/70 text-xs mt-1">Show this when called</p>
+                <p className="text-kopitiam-cream/70 text-[10px] md:text-xs mt-1">Show this when called</p>
               </div>
-              <div className="px-6 py-5 space-y-4">
+              <div className="px-4 py-4 md:px-6 md:py-5 space-y-3 md:space-y-4 overflow-y-auto">
                 {/* Items ordered */}
                 <div className="bg-white rounded-lg border border-kopitiam-dark/10 divide-y divide-kopitiam-dark/5">
                   {confirmedOrder.items.map((item: any, i: number) => (
                     <div key={i} className="flex justify-between items-center px-4 py-2 text-sm">
                       <span className="font-serif text-kopitiam-dark font-semibold">{item.name} <span className="text-kopitiam-dark/50">×{item.quantity}</span></span>
-                      <span className="font-bold text-kopitiam-dark">${(item.price * item.quantity).toFixed(2)}</span>
+                      <span className="font-bold text-kopitiam-dark">Rp {Number(item.price * item.quantity).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
                     </div>
                   ))}
                   <div className="flex justify-between items-center px-4 py-3 bg-kopitiam-paper">
                     <span className="font-serif font-black text-kopitiam-dark uppercase tracking-wider text-sm">Total</span>
-                    <span className="font-serif font-black text-kopitiam-red text-xl">${confirmedOrder.total.toFixed(2)}</span>
+                    <span className="font-serif font-black text-kopitiam-red text-xl">Rp {confirmedOrder.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
                   </div>
                 </div>
                 {/* Cash Note */}
                 <div className="flex items-start gap-3 bg-amber-50 border-2 border-amber-300 rounded-lg px-4 py-3">
                   <Banknote size={20} className="text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-amber-800 text-sm font-bold leading-snug">
-                    Please bring <span className="text-amber-900 underline underline-offset-2">exact cash</span> of ${confirmedOrder.total.toFixed(2)} — no change provided.
+                    Please bring <span className="text-amber-900 underline underline-offset-2">exact cash</span> of Rp {confirmedOrder.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} — no change provided.
                   </p>
                 </div>
                 {/* Location */}
@@ -909,7 +908,7 @@ export const OrderPanel: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setConfirmedOrder(null)}
-                  className="w-full py-3 bg-kopitiam-dark text-kopitiam-cream rounded-lg font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95"
+                  className="w-full py-2 md:py-3 bg-kopitiam-dark text-kopitiam-cream rounded-lg font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95 text-[10px] md:text-xs"
                 >
                   Got it! Close
                 </button>

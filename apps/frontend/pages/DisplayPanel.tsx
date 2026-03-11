@@ -39,12 +39,12 @@ export const DisplayPanel: React.FC = () => {
             </button>
 
             {/* Header */}
-            <header className="px-6 py-4 md:px-10 md:py-6 border-b-4 border-kopitiam-salmon flex flex-col md:flex-row justify-between items-center bg-kopitiam-dark shadow-xl z-20 gap-4">
+            <header className="px-4 py-4 md:px-10 md:py-6 border-b-4 border-kopitiam-salmon flex flex-col md:flex-row justify-between items-center bg-kopitiam-dark shadow-xl z-20 gap-4">
                 <div className="flex flex-col text-center md:text-left">
-                    <h1 className="text-2xl md:text-4xl font-serif font-black tracking-widest text-kopitiam-cream uppercase drop-shadow-md">
+                    <h1 className="text-xl md:text-4xl font-serif font-black tracking-widest text-kopitiam-cream uppercase drop-shadow-md">
                         {queueMode === 'photobooth' ? 'Photo Status' : 'Order Status'}
                     </h1>
-                    <span className="text-kopitiam-salmon tracking-[0.3em] md:tracking-[0.5em] text-xs md:text-sm font-bold uppercase mt-1">Dim Kopi &bull; {queueMode === 'photobooth' ? 'Booth Queue' : 'Kitchen Queue'}</span>
+                    <span className="text-kopitiam-salmon tracking-[0.2em] md:tracking-[0.5em] text-[10px] md:text-sm font-bold uppercase mt-1">Dim Kopi &bull; {queueMode === 'photobooth' ? 'Booth Queue' : 'Kitchen Queue'}</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 backdrop-blur-sm mr-2">
@@ -77,7 +77,7 @@ export const DisplayPanel: React.FC = () => {
                             </span>
                         )}
                     </button>
-                    <div className="text-3xl md:text-4xl font-mono text-kopitiam-jade font-bold bg-black/30 px-4 py-2 md:px-6 rounded border border-kopitiam-jade/30">
+                    <div className="text-2xl md:text-4xl font-mono text-kopitiam-jade font-bold bg-black/30 px-3 py-1 md:px-6 rounded border border-kopitiam-jade/30">
                         {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                 </div>
@@ -89,10 +89,10 @@ export const DisplayPanel: React.FC = () => {
                 {/* Left Side: READY TO TAKE (Main Focus) */}
                 <div className="flex-[2] bg-kopitiam-jade flex flex-col relative overflow-hidden border-b-4 md:border-b-0 md:border-r-4 border-kopitiam-dark">
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')] opacity-10"></div>
-                    <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-[0.2em] text-center py-6 border-b-4 border-white/20 bg-black/10 backdrop-blur-sm z-10 flex items-center justify-center gap-4">
+                    <h2 className="text-2xl md:text-5xl font-black text-white uppercase tracking-[0.1em] md:tracking-[0.2em] text-center py-4 md:py-6 border-b-4 border-white/20 bg-black/10 backdrop-blur-sm z-10 flex items-center justify-center gap-2 md:gap-4">
                         <CheckCircleIcon /> {queueMode === 'photobooth' ? 'Ready to Take' : 'Ready to Serve'}
                     </h2>
-                    <div className="flex-1 p-6 overflow-y-auto content-start flex flex-wrap gap-4 align-content-start z-10 justify-center">
+                    <div className="flex-1 p-4 md:p-6 overflow-y-auto content-start flex flex-wrap gap-3 md:gap-4 align-content-start z-10 justify-center">
                         {readyOrders.length === 0 ? (
                             <div className="w-full h-full flex flex-col items-center justify-center text-white/40">
                                 <Image size={64} className="mb-4 opacity-50" />
@@ -100,13 +100,13 @@ export const DisplayPanel: React.FC = () => {
                             </div>
                         ) : (
                             readyOrders.map(order => (
-                                <div key={order.id} className="w-48 md:w-64 animate-bounce-in">
-                                    <div className="bg-kopitiam-cream text-kopitiam-dark rounded-sm p-4 text-center shadow-[8px_8px_0_rgba(0,0,0,0.2)] border-4 border-kopitiam-dark transform transition-transform hover:scale-105">
-                                        <div className="text-5xl font-serif font-black mb-2 text-kopitiam-red">{order.id}</div>
-                                        <div className="text-lg font-bold uppercase tracking-wide opacity-90 truncate border-t-2 border-kopitiam-dark/10 pt-2">
-                                            {order.customerName} <span className="text-sm opacity-50">({order.customerClass})</span>
+                                <div key={order.id} className="w-32 sm:w-48 md:w-64 animate-bounce-in">
+                                    <div className="bg-kopitiam-cream text-kopitiam-dark rounded-sm p-3 md:p-4 text-center shadow-[6px_6px_0_rgba(0,0,0,0.2)] md:shadow-[8px_8px_0_rgba(0,0,0,0.2)] border-2 md:border-4 border-kopitiam-dark transform transition-transform hover:scale-105">
+                                        <div className="text-3xl md:text-5xl font-serif font-black mb-1 md:mb-2 text-kopitiam-red">{order.id}</div>
+                                        <div className="text-sm md:text-lg font-bold uppercase tracking-wide opacity-90 truncate border-t-2 border-kopitiam-dark/10 pt-1 md:pt-2">
+                                            {order.customerName}
                                         </div>
-                                        {order.isPreorder && <div className="mt-1 text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded inline-block font-bold">BOOKING</div>}
+                                        {order.isPreorder && <div className="mt-1 text-[8px] md:text-xs bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded inline-block font-bold">BOOKING</div>}
                                     </div>
                                 </div>
                             ))
@@ -236,7 +236,7 @@ export const DisplayPanel: React.FC = () => {
                                         </div>
                                         <div className="text-2xl font-serif font-black text-kopitiam-jade mb-1">{order.id}</div>
                                         <div className="text-xs text-white/70 font-bold truncate">{order.customerName} ({order.customerClass})</div>
-                                        <div className="text-xs text-white/40 mt-1">${order.total?.toFixed(2)}</div>
+                                        <div className="text-xs text-white/40 mt-1">Rp {order.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</div>
                                         {order.isPreorder && (
                                             <div className="mt-1.5 text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full inline-block font-bold">BOOKING</div>
                                         )}
