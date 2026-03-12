@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import MenuItem from './models/MenuItem.js';
@@ -21,8 +22,14 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve static files from the uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Serve static files from the uploads directory (using /api/uploads so Nginx proxies it)
+app.use('/api/uploads', express.static(uploadsDir));
 
 // Configure Multer for image uploads
 const storage = multer.diskStorage({
@@ -73,6 +80,14 @@ mongoose.connect(MONGODB_URI)
         if (!await Settings.findOne({ key: 'terms_food' })) {
             await Settings.create({ key: 'terms_food', value: foodTerms });
         }
+
+        // Migration: Update existing menu items with old image urls
+        // from `/uploads/` to `/api/uploads/` so they resolve correctly
+        const menuItemsToMigrate = await MenuItem.find({ image: { $regex: '/uploads/' } });
+        for (let item of menuItemsToMigrate) {
+            item.image = item.image.replace('/uploads/', '/api/uploads/');
+            await item.save();
+        }
     })
     .catch(err => console.error('MongoDB connection error:', err));
 
@@ -113,8 +128,8 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
         return res.status(400).json({ error: 'No image file uploaded' });
     }
     // Return the URL where the image can be accessed
-    // e.g. http://localhost:5001/uploads/img-123456.jpg
-    const imageUrl = `/uploads/${req.file.filename}`;
+    // Using /api/uploads to hit the proxy bypass for nginx
+    const imageUrl = `/api/uploads/${req.file.filename}`;
     res.json({ url: imageUrl });
 });
 
