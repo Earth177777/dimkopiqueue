@@ -123,9 +123,9 @@ export const AdminPanel: React.FC = () => {
             if (!response.ok) throw new Error('Upload failed');
             const data = await response.json();
 
-            // Reconstruct full URL if using local network IP or localhost
-            const baseUrl = window.location.origin.replace('5173', '5001'); // Assume backend on 5001 relative to frontend host
-            setNewItemImage(`${baseUrl}${data.url}`);
+            // Use the relative path returned by the server
+            // Browser or Nginx will correctly handle mapping /api to the correct domain or proxy
+            setNewItemImage(data.url);
         } catch (error) {
             console.error('Error uploading image:', error);
             alert('Failed to upload image.');
