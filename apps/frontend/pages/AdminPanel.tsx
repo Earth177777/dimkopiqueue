@@ -242,13 +242,15 @@ export const AdminPanel: React.FC = () => {
             return `${order.id},${catStr},"${order.customerName}","${order.customerClass || ''}",${dateStr},${typeStr},${order.total},${order.status},"${itemsStr}"\n`;
         });
 
-        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(headers.join(',') + rows.join(''));
-        const encodedUri = csvContent;
+        const csvContent = headers.join(',') + rows.join('');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
 
         // Create an invisible link element to trigger the download
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        link.setAttribute("href", url);
         link.setAttribute("download", `dim_kopi_queue_export_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
