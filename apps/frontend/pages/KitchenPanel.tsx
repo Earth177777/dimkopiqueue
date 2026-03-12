@@ -52,8 +52,8 @@ export const KitchenPanel: React.FC = () => {
       return `${order.id},"${order.customerName}","${order.customerClass || ''}",${dateStr},${typeStr},${order.status},${order.total},"${itemsStr}"\n`;
     });
 
-    const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + rows.join('');
-    const encodedUri = encodeURI(csvContent);
+    const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(headers.join(',') + rows.join(''));
+    const encodedUri = csvContent;
 
     // Create an invisible link element to trigger the download
     const link = document.createElement("a");
